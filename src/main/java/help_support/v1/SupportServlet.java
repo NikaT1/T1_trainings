@@ -1,34 +1,41 @@
 package help_support.v1;
 
 
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.lang.reflect.InvocationTargetException;
 
 public class SupportServlet extends HttpServlet {
 
-    private final ArrayList<String> phrases = new ArrayList<>(List.of("У тебя все получиться", "Не сдавайся!"));
-    private final Random random = new Random();
+    private SupportService supportService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        try {
+            supportService = new ApplicationContext().getInstance(SupportService.class);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setStatus(200);
         response.setContentType("text/plain");
-        int ind = random.nextInt(phrases.size());
-        response.getWriter().write(phrases.get(ind));
+        response.getWriter().write(supportService.getPhrase());
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        phrases.add(request.getParameter("phrase"));
         response.setStatus(200);
         response.setContentType("text/plain");
-        response.getWriter().write("Новая фраза добавлена!");
+        response.getWriter().write(supportService.addPhrase(request.getParameter("phrase")));
     }
 
 }

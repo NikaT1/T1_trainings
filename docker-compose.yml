@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   tomcat:
-    image: tomcat:9.0
+    image: tomcat:10.0
     volumes:
       - .target/T1_task1.war:/usr/local/tomcat/webapps/T1_task1.war
     ports:
