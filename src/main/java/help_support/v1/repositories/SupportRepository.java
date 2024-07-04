@@ -1,4 +1,4 @@
-package help_support.v1;
+package help_support.v1.repositories;
 
 import java.util.Set;
 import java.util.UUID;

@@ -1,6 +1,7 @@
 package help_support.v1;
 
 
+import help_support.v1.handler.HandlerMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -10,15 +11,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-public class SupportServlet extends HttpServlet {
+public class DispatcherServlet extends HttpServlet {
 
-    private SupportService supportService;
+    private ApplicationContext applicationContext;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
-            supportService = new ApplicationContext().getInstance(SupportService.class);
+            applicationContext = new ApplicationContext();
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -26,16 +27,13 @@ public class SupportServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setStatus(200);
-        response.setContentType("text/plain");
-        response.getWriter().write(supportService.getPhrase());
+        HandlerMapper handlerMapper = applicationContext.getInstance(HandlerMapper.class);
+        handlerMapper.mapRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setStatus(200);
-        response.setContentType("text/plain");
-        response.getWriter().write(supportService.addPhrase(request.getParameter("phrase")));
+        doGet(request, response);
     }
 
 }
